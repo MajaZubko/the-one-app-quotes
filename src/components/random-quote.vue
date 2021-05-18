@@ -102,7 +102,19 @@ export default {
       }
     },
     addToFavourites() {
-      this.addToFavourites(this.getCurrentQuoteObject())
+      this.addFavouriteQuote(this.getCurrentQuoteObject())
+    },
+    removeFromFavourites() {
+      this.deleteFavouriteQuote(this.getCurrentQuoteObject())
+    },
+    isFavourited() {
+      let isFav = false
+      this.favouriteQuotes.map((favouriteQuote) => {
+        if (favouriteQuote.id === this.getRandomQuote()._id) {
+          isFav = true
+        }
+      })
+      return isFav
     },
   },
 }
@@ -122,13 +134,29 @@ export default {
         <div v-if="currentQuoteIndex > -1" :class="$style.quoteDetails">
           <p>{{ quoteAuthor ? `~ ${quoteAuthor}` : '' }}</p>
           <p :class="$style.quoteMovie">{{ quoteMovie }}</p>
-          <section :class="$style.favouriteSection" @click="addToFavourites">
+          <section
+            v-if="!isFavourited()"
+            :class="$style.favouriteSection"
+            @click="addToFavourites"
+          >
             <img
               :class="$style.heartIcon"
-              alt="favourite"
+              alt="Add favourite"
               src="@assets/icons/iconmonstr-favorite-10.svg"
             />
             Add to favourites
+          </section>
+          <section
+            v-if="isFavourited()"
+            :class="$style.favouriteSection"
+            @click="removeFromFavourites"
+          >
+            <img
+              :class="$style.heartIcon"
+              alt="Remove favourite"
+              src="@assets/icons/iconmonstr-favorite-14.svg"
+            />
+            Remove from favourites
           </section>
         </div>
       </div>
