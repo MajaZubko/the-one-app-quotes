@@ -21,10 +21,13 @@ export default {
       type: Array,
       default: () => [],
     },
+    quoteText: {
+      type: String,
+      default: () => '',
+    },
   },
   data() {
     return {
-      quoteText: '',
       quoteAuthor: '',
       quoteMovie: '',
     }
@@ -133,6 +136,7 @@ export default {
 .favouriteSection {
   display: flex;
   align-items: center;
+  margin-top: 8px;
   cursor: pointer;
 
   &:hover {

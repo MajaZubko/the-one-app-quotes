@@ -91,6 +91,7 @@ export default {
           :quote="getRandomQuote()"
           :movies="movies"
           :characters="characters"
+          :quote-text="quoteText"
         />
       </div>
       <div v-if="currentQuoteIndex > -1" :class="$style.endQuote">"</div>
