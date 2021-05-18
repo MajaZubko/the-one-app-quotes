@@ -1,11 +1,13 @@
 <script>
 import axios from 'axios'
-import { isEmpty } from 'lodash'
-import { favouritesComputed, favouritesMethods } from '@state/helpers'
+import RandomQuoteDetailsSection from './random-quote-details-section.vue'
 
 export default {
   page: {
     title: 'Random Quote',
+  },
+  components: {
+    RandomQuoteDetailsSection,
   },
   data() {
     return {
@@ -14,18 +16,12 @@ export default {
       characters: [],
       movies: [],
       quoteText: '',
-      quoteAuthor: '',
-      quoteMovie: '',
     }
-  },
-  computed: {
-    ...favouritesComputed,
   },
   mounted() {
     this.fetchData()
   },
   methods: {
-    ...favouritesMethods,
     fetchData() {
       axios
         .get('https://the-one-api.dev/v2/quote?limit=1000000', {
@@ -58,7 +54,6 @@ export default {
     getRandomQuoteIndex() {
       const max = this.quotes.length
       this.currentQuoteIndex = Math.round(Math.random() * max)
-      this.getQuoteDetails()
     },
     getRandomQuote() {
       if (
@@ -66,7 +61,7 @@ export default {
         this.currentQuoteIndex < 0 ||
         !this.quotes[this.currentQuoteIndex]
       ) {
-        return ''
+        return
       }
 
       let foundQuote = this.quotes[this.currentQuoteIndex]?.dialog
@@ -76,45 +71,6 @@ export default {
       }
       this.quoteText = foundQuote
       return this.quotes[this.currentQuoteIndex]
-    },
-    getQuoteDetails() {
-      const quote = this.getRandomQuote()
-      if (!isEmpty(this.characters)) {
-        const author = this.characters.find(
-          (character) => character._id === quote.character
-        )
-        this.quoteAuthor = author?.name || ''
-      }
-
-      if (!isEmpty(this.movies)) {
-        const movieOfOrigin = this.movies.find(
-          (movie) => movie._id === quote.movie
-        )
-        this.quoteMovie = movieOfOrigin?.name || ''
-      }
-    },
-    getCurrentQuoteObject() {
-      return {
-        id: this.getRandomQuote()._id,
-        text: this.quoteText,
-        author: this.quoteAuthor,
-        movie: this.quoteMovie,
-      }
-    },
-    addToFavourites() {
-      this.addFavouriteQuote(this.getCurrentQuoteObject())
-    },
-    removeFromFavourites() {
-      this.deleteFavouriteQuote(this.getCurrentQuoteObject())
-    },
-    isFavourited() {
-      let isFav = false
-      this.favouriteQuotes.map((favouriteQuote) => {
-        if (favouriteQuote.id === this.getRandomQuote()._id) {
-          isFav = true
-        }
-      })
-      return isFav
     },
   },
 }
@@ -131,34 +87,11 @@ export default {
         <h3>
           {{ quoteText }}
         </h3>
-        <div v-if="currentQuoteIndex > -1" :class="$style.quoteDetails">
-          <p>{{ quoteAuthor ? `~ ${quoteAuthor}` : '' }}</p>
-          <p :class="$style.quoteMovie">{{ quoteMovie }}</p>
-          <section
-            v-if="!isFavourited()"
-            :class="$style.favouriteSection"
-            @click="addToFavourites"
-          >
-            <img
-              :class="$style.heartIcon"
-              alt="Add favourite"
-              src="@assets/icons/iconmonstr-favorite-10.svg"
-            />
-            Add to favourites
-          </section>
-          <section
-            v-if="isFavourited()"
-            :class="$style.favouriteSection"
-            @click="removeFromFavourites"
-          >
-            <img
-              :class="$style.heartIcon"
-              alt="Remove favourite"
-              src="@assets/icons/iconmonstr-favorite-14.svg"
-            />
-            Remove from favourites
-          </section>
-        </div>
+        <RandomQuoteDetailsSection
+          :quote="getRandomQuote()"
+          :movies="movies"
+          :characters="characters"
+        />
       </div>
       <div v-if="currentQuoteIndex > -1" :class="$style.endQuote">"</div>
     </div>
@@ -201,35 +134,6 @@ export default {
     position: fixed;
     top: 30vh;
     right: 30px;
-  }
-
-  .quoteDetails {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    text-align: right;
-  }
-
-  .quoteMovie {
-    margin-top: 0;
-    font-style: italic;
-  }
-
-  .favouriteSection {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-
-    &:hover {
-      transition: all 0.3s ease-in-out;
-      transform: scale(1.3);
-    }
-  }
-
-  .heartIcon {
-    width: 20px;
-    height: auto;
-    margin-right: 8px;
   }
 }
 </style>
