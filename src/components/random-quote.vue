@@ -1,6 +1,7 @@
 <script>
 import axios from 'axios'
 import { isEmpty } from 'lodash'
+import { favouritesComputed, favouritesMethods } from '@state/helpers'
 
 export default {
   page: {
@@ -17,10 +18,14 @@ export default {
       quoteMovie: '',
     }
   },
+  computed: {
+    ...favouritesComputed,
+  },
   mounted() {
     this.fetchData()
   },
   methods: {
+    ...favouritesMethods,
     fetchData() {
       axios
         .get('https://the-one-api.dev/v2/quote?limit=1000000', {
@@ -88,6 +93,17 @@ export default {
         this.quoteMovie = movieOfOrigin?.name || ''
       }
     },
+    getCurrentQuoteObject() {
+      return {
+        id: this.getRandomQuote()._id,
+        text: this.quoteText,
+        author: this.quoteAuthor,
+        movie: this.quoteMovie,
+      }
+    },
+    addToFavourites() {
+      this.addToFavourites(this.getCurrentQuoteObject())
+    },
   },
 }
 </script>
@@ -103,9 +119,17 @@ export default {
         <h3>
           {{ quoteText }}
         </h3>
-        <div :class="$style.quoteDetails">
+        <div v-if="currentQuoteIndex > -1" :class="$style.quoteDetails">
           <p>{{ quoteAuthor ? `~ ${quoteAuthor}` : '' }}</p>
           <p :class="$style.quoteMovie">{{ quoteMovie }}</p>
+          <section :class="$style.favouriteSection" @click="addToFavourites">
+            <img
+              :class="$style.heartIcon"
+              alt="favourite"
+              src="@assets/icons/iconmonstr-favorite-10.svg"
+            />
+            Add to favourites
+          </section>
         </div>
       </div>
       <div v-if="currentQuoteIndex > -1" :class="$style.endQuote">"</div>
@@ -154,12 +178,30 @@ export default {
   .quoteDetails {
     display: flex;
     flex-direction: column;
+    align-items: flex-end;
     text-align: right;
   }
 
   .quoteMovie {
     margin-top: 0;
     font-style: italic;
+  }
+
+  .favouriteSection {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    &:hover {
+      transition: all 0.3s ease-in-out;
+      transform: scale(1.3);
+    }
+  }
+
+  .heartIcon {
+    width: 20px;
+    height: auto;
+    margin-right: 8px;
   }
 }
 </style>
