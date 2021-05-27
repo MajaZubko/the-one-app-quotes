@@ -1,15 +1,28 @@
 <script>
 import { favouritesComputed, favouritesMethods } from '@state/helpers'
+import CopyToClipboard from '@components/./copy-to-clipboard.vue'
 
 export default {
   page: {
     title: 'Favourites',
+  },
+  components: {
+    CopyToClipboard,
   },
   computed: {
     ...favouritesComputed,
   },
   methods: {
     ...favouritesMethods,
+    copyToClipboard(quote) {
+      const link = `${window.location.host}/quote/${quote.id}`
+      if (navigator.share) {
+        navigator.share({ text: 'My new favourite LOTR quote', url: link })
+      } else {
+        this.newText = link
+        navigator.clipboard.writeText(link)
+      }
+    },
   },
 }
 </script>
@@ -38,15 +51,11 @@ export default {
             Remove from favourites
           </span>
         </p>
-        <p class="card-footer-item">
-          <span :class="$style.button">
-            <img
-              :class="$style.icon"
-              alt="Share with a friend"
-              src="@assets/icons/iconmonstr-copy-2.svg"
-            />
-            Share with a friend
-          </span>
+        <p class="card-footer-item" @click="copyToClipboard(quote)">
+          <CopyToClipboard
+            button-text="Share with a friend"
+            tooltip-text="Copy link to clipboard"
+          />
         </p>
       </footer>
     </div>

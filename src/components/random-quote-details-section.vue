@@ -1,8 +1,12 @@
 <script>
 import { isEmpty } from 'lodash'
+import CopyToClipboard from '@components/./copy-to-clipboard.vue'
 import { favouritesComputed, favouritesMethods } from '@state/helpers'
 
 export default {
+  components: {
+    CopyToClipboard,
+  },
   props: {
     quote: {
       type: Object,
@@ -85,6 +89,15 @@ export default {
       }
       return isFav
     },
+    copyToClipboard(quote) {
+      const link = `${window.location.host}/quote/${quote._id}`
+      if (navigator.share) {
+        navigator.share({ text: 'My new favourite LOTR quote', url: link })
+      } else {
+        this.newText = link
+        navigator.clipboard.writeText(link)
+      }
+    },
   },
 }
 </script>
@@ -118,6 +131,12 @@ export default {
         />
         Remove from favourites
       </section>
+      <span :class="$style.favouriteSection" @click="copyToClipboard(quote)">
+        <CopyToClipboard
+          button-text="Share with a friend"
+          tooltip-text="Copy link to clipboard"
+        />
+      </span>
     </div>
   </div>
 </template>
