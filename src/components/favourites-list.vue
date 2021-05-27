@@ -29,12 +29,9 @@ export default {
       </div>
       <footer class="card-footer">
         <p class="card-footer-item">
-          <span
-            :class="$style.removeButton"
-            @click="deleteFavouriteQuote(quote)"
-          >
+          <span :class="$style.button" @click="deleteFavouriteQuote(quote)">
             <img
-              :class="$style.heartIcon"
+              :class="$style.icon"
               alt="Remove favourite"
               src="@assets/icons/iconmonstr-favorite-14.svg"
             />
@@ -42,7 +39,12 @@ export default {
           </span>
         </p>
         <p class="card-footer-item">
-          <span>
+          <span :class="$style.button">
+            <img
+              :class="$style.icon"
+              alt="Share with a friend"
+              src="@assets/icons/iconmonstr-copy-2.svg"
+            />
             Share with a friend
           </span>
         </p>
@@ -58,7 +60,7 @@ export default {
   margin-bottom: 8px;
 }
 
-.removeButton {
+.button {
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -69,7 +71,7 @@ export default {
   }
 }
 
-.heartIcon {
+.icon {
   width: 20px;
   height: auto;
   margin-right: 8px;
